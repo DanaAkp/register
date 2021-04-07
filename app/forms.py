@@ -6,8 +6,6 @@ from wtforms.validators import Required, Length, EqualTo
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[Required(), Length(1, 64)])
     password = PasswordField('Password', validators=[Required()])
-    password_again = PasswordField('Repeat password',
-                                   validators=[Required(), EqualTo('password')])
     submit = SubmitField('Submit')
 
 

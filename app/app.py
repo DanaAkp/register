@@ -6,6 +6,7 @@ from flask_admin import Admin
 from flask_bootstrap3 import Bootstrap
 from flask_migrate import Migrate
 import os
+from flask_appbuilder import AppBuilder, SQLA
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -25,6 +26,8 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
 
+# app_builder = AppBuilder(app, db.session)
+
 
 from app.models import User, Organization, TypeOfService, ServiceForm, OrganizationServiceForm, ServiceFormTypeOfService
 
@@ -41,6 +44,11 @@ admin = Admin(app=app, name='Admin', template_mode='bootstrap3')
 
 
 from app.admin import MyModelView, OrganizationView
+# from app.model_view import OrganizationModelView, FormServiceModelView
+
+
+# app_builder.add_view(OrganizationModelView, 'Name1')
+# app_builder.add_view(FormServiceModelView, 'Name2')
 
 
 admin.add_view(MyModelView(User, db.session))
