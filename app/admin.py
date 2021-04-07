@@ -4,8 +4,11 @@ from flask_login import current_user
 
 
 class OrganizationView(ModelView):
-    column_filters = ('name', 'id_form_service')
+    # column_filters = ('name', 'id_form_service')
     column_searchable_list = ('name', 'contacts')
+    can_create = False
+    can_edit = False
+    can_delete = False
     # column_hide_backrefs = False
     # column_list = ('name', 'date_registration', 'opf', 'contacts', 'name_boss', 'license',
     #                'direction_of_rehabilitation')
