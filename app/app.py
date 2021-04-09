@@ -27,7 +27,7 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 
 
-from app.models import User, Organization, TypeOfService, ServiceForm
+from app.models import User, Organization, TypeOfService, ServiceForm, Role
 
 
 db.create_all()
@@ -41,15 +41,17 @@ def load_user(id):
 admin = Admin(app=app, name='Реестр реабилитационных организаций', template_mode='bootstrap3')
 
 
-from app.admin import MyModelView, OrganizationView
+from app.admin import MyModelView, OrganizationView, AdminModelView
 
 
 admin.add_view(OrganizationView(Organization, db.session, endpoint='model_view_organization'))
 
 admin.add_view(MyModelView(Organization, db.session))
-# admin.add_view(MyModelView(User, db.session))
 admin.add_view(MyModelView(TypeOfService, db.session))
 admin.add_view(MyModelView(ServiceForm, db.session))
+
+admin.add_view(AdminModelView(User, db.session))
+admin.add_view(AdminModelView(Role, db.session))
 
 
 # region View
@@ -77,6 +79,9 @@ def login():
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
+        if user.is_block:
+            flash('your account is blocked by the administrator')
+            return redirect(url_for('login'))
         login_user(user)
         return redirect(url_for('home'))
     return render_template('login.html', title='Sign In', form=form)
@@ -98,6 +103,7 @@ def register():
             new_user = User()
             new_user.name = username
             new_user.set_password(password)
+            new_user.is_block = False
             db.session.add(new_user)
             db.session.commit()
         else:
