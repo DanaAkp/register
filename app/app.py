@@ -6,7 +6,6 @@ from flask_admin import Admin
 from flask_bootstrap3 import Bootstrap
 from flask_migrate import Migrate
 import os
-from flask_appbuilder import AppBuilder, SQLA
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -16,6 +15,7 @@ from app.forms import RegistrationForm, LoginForm
 
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 FLASK_ENV = os.environ.get("FLASK_ENV") or 'development'
 app.config.from_object('app.config.%s%sConfig' % (FLASK_ENV[0].upper(), FLASK_ENV[1:]))
 app.static_folder = app.config['STATIC_FOLDER']
@@ -25,8 +25,6 @@ CSRFProtect(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
-
-# app_builder = AppBuilder(app, db.session)
 
 
 from app.models import User, Organization, TypeOfService, ServiceForm, OrganizationServiceForm, ServiceFormTypeOfService
@@ -40,21 +38,20 @@ def load_user(id):
     return User.query.get(int(id))
 
 
-admin = Admin(app=app, name='Admin', template_mode='bootstrap3')
+admin = Admin(app=app, name='Реестр реабилитационных организаций', template_mode='bootstrap3')
 
 
 from app.admin import MyModelView, OrganizationView
-# from app.model_view import OrganizationModelView, FormServiceModelView
 
 
-# app_builder.add_view(OrganizationModelView, 'Name1')
-# app_builder.add_view(FormServiceModelView, 'Name2')
-
-
-admin.add_view(MyModelView(User, db.session))
 admin.add_view(OrganizationView(Organization, db.session))
+
+# admin.add_view(MyModelView(Organization, db.session))
+admin.add_view(MyModelView(User, db.session))
 admin.add_view(MyModelView(TypeOfService, db.session))
 admin.add_view(MyModelView(ServiceForm, db.session))
+admin.add_view(MyModelView(OrganizationServiceForm, db.session))
+admin.add_view(MyModelView(ServiceFormTypeOfService, db.session))
 
 
 # region View
@@ -67,12 +64,13 @@ def session_():
 
 @app.route('/')
 def home():
+    return redirect('/admin')
     # return 'Hello!'
-    session = session_()
-
-    query = session.query(Organization).all()
-
-    return render_template('main.html', items=query, title='Main')
+    # session = session_()
+    #
+    # query = session.query(Organization).all()
+    #
+    # return render_template('main.html', items=query, title='Main')
 
 
 @app.route('/login', methods=['GET', 'POST'])
