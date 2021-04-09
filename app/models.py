@@ -3,6 +3,16 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+organization_service_form = db.Table('organization_service_form',
+                                     db.Column('organizations_id', db.Integer, db.ForeignKey('organizations.id')),
+                                     db.Column('service_forms_id', db.Integer, db.ForeignKey('service_forms.id')))
+
+
+type_service_form = db.Table('type_service_form',
+                             db.Column('types_of_service_id', db.Integer, db.ForeignKey('types_of_service.id')),
+                             db.Column('service_forms_id', db.Integer, db.ForeignKey('service_forms.id')))
+
+
 class Organization(db.Model):
     __tablename__ = 'organizations'
     # 1 регистрационный номер учетной записи
@@ -20,9 +30,9 @@ class Organization(db.Model):
     # 7 информация о лицензии организации
     license = db.Column(db.Text(), nullable=False)
 
-    # 8 формы обслуживания TODO
-    id_form_service = db.relationship('OrganizationServiceForm', backref=db.backref('organizations', lazy='subquery'),
-                                      lazy='dynamic')
+    # 8 формы обслуживания
+    form_service = db.relationship('ServiceForm', secondary='organization_service_form',
+                                      backref=db.backref('organizations', lazy='dynamic'))
 
     # 9 направления реабилитации или абилитации
     direction_of_rehabilitation = db.Column(db.Text(), nullable=False)
@@ -51,8 +61,6 @@ class ServiceForm(db.Model):
     __tablename__ = 'service_forms'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    id_organization = db.relationship('OrganizationServiceForm', backref='service_forms')
-    id_type_service = db.relationship('ServiceFormTypeOfService', backref='service_forms')
 
     def __str__(self):
         return self.name
@@ -63,22 +71,11 @@ class TypeOfService(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.Text(), nullable=False)
-    id_service_form = db.relationship('ServiceFormTypeOfService', backref='types_of_service')
+    id_service_form = db.relationship('ServiceForm',secondary='type_service_form',
+                                      backref=db.backref('types_of_service', lazy='dynamic'))
 
     def __str__(self):
         return self.name
-
-
-class OrganizationServiceForm(db.Model):
-    __tablename__ = 'organizations_service_forms'
-    id_organization = db.Column(db.Integer(), db.ForeignKey('organizations.id'), primary_key=True)
-    id_service_form = db.Column(db.Integer(), db.ForeignKey('service_forms.id'), primary_key=True)
-
-
-class ServiceFormTypeOfService(db.Model):
-    __tablename__ = 'service_forms_types_of_service'
-    id_service_form = db.Column(db.Integer(), db.ForeignKey('service_forms.id'), primary_key=True)
-    id_type_of_service = db.Column(db.Integer(), db.ForeignKey('types_of_service.id'), primary_key=True)
 
 
 class User(UserMixin, db.Model):

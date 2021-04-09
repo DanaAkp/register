@@ -27,7 +27,7 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 
 
-from app.models import User, Organization, TypeOfService, ServiceForm, OrganizationServiceForm, ServiceFormTypeOfService
+from app.models import User, Organization, TypeOfService, ServiceForm
 
 
 db.create_all()
@@ -46,12 +46,9 @@ from app.admin import MyModelView, OrganizationView
 
 admin.add_view(OrganizationView(Organization, db.session))
 
-# admin.add_view(MyModelView(Organization, db.session))
 admin.add_view(MyModelView(User, db.session))
 admin.add_view(MyModelView(TypeOfService, db.session))
 admin.add_view(MyModelView(ServiceForm, db.session))
-admin.add_view(MyModelView(OrganizationServiceForm, db.session))
-admin.add_view(MyModelView(ServiceFormTypeOfService, db.session))
 
 
 # region View
