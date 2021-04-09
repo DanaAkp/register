@@ -55,13 +55,6 @@ admin.add_view(AdminModelView(Role, db.session))
 
 
 # region View
-def session_():
-    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
-
-
 @app.route('/')
 def home():
     if current_user.is_authenticated:
@@ -111,35 +104,4 @@ def register():
             return render_template('register.html', form=form)
     return render_template('register.html', title='Register', form=form)
 
-
-# @app.route('/admin')
-# @login_required
-# def admin():
-
-
-
-
-
-
-
-# @app.route('/main')
-# def main():
-#     session = session_()
-#
-#     query = session.query(Schedule, Presentation, Room).all()
-#
-#     return render_template('main.html', items=query, title='Schedule')
-
-
-# @app.route('/presenter/<username>')
-# @login_required
-# def presenter(username):
-#     session = session_()
-#
-#     query = session.query(User, Presentation)
-#     query = query.join(Author, Author.id_user == User.id)
-#     query = query.join(Presentation, Author.id_presentation == Presentation.id)
-#
-#     return render_template('presenter.html', title='Presenter - '+username, items=query)
-# endregion
 

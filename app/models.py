@@ -40,7 +40,7 @@ class Organization(db.Model):
     resources = db.Column(db.Text(), nullable=False)
     # 11 общее количество мест для реабил. услуг
     total_seats = db.Column(db.Integer(), nullable=False)
-    # 11 количество свободных мест для реабил. услуг TODO по формам обслуживания
+    # 11 количество свободных мест для реабил. услуг
     free_seats = db.Column(db.Integer(), nullable=False)
     # 12 информация о результатх, проведенных проверок
     result_checks = db.Column(db.Text(), nullable=False)
