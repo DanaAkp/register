@@ -44,9 +44,10 @@ admin = Admin(app=app, name='Реестр реабилитационных ор�
 from app.admin import MyModelView, OrganizationView
 
 
-admin.add_view(OrganizationView(Organization, db.session))
+admin.add_view(OrganizationView(Organization, db.session, endpoint='model_view_organization'))
 
-admin.add_view(MyModelView(User, db.session))
+admin.add_view(MyModelView(Organization, db.session))
+# admin.add_view(MyModelView(User, db.session))
 admin.add_view(MyModelView(TypeOfService, db.session))
 admin.add_view(MyModelView(ServiceForm, db.session))
 
@@ -61,13 +62,9 @@ def session_():
 
 @app.route('/')
 def home():
-    return redirect('/admin')
-    # return 'Hello!'
-    # session = session_()
-    #
-    # query = session.query(Organization).all()
-    #
-    # return render_template('main.html', items=query, title='Main')
+    if current_user.is_authenticated:
+        return redirect('/admin')
+    return redirect(url_for('model_view_organization.index_view'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
